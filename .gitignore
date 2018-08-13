@@ -5,14 +5,8 @@ node_modules
 *.sublime-*
 *.log
 .idea
-dist/assets
 .tmp
 .happypack
 .bulldog
 bulldog
-!dist/assets/
-dist/assets/*
-!/dist/assets/audio
-!/dist/assets/image
-!/dist/assets/video
 *.zip

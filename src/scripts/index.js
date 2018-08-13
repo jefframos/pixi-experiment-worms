@@ -54,11 +54,11 @@ for (var i = 0; i < audioManifest.length; i++) {
     url += '.mp3'
     PIXI.loader.add(audioManifest[i], url)
 }
-if (window.isIronSource || isMobile) {
-    tempManifest = tempManifest.map(
-        a => a.replace(/.json/g, '_mip.json')
-    );
-}
+// if (window.isIronSource || isMobile) {
+//     tempManifest = tempManifest.map(
+//         a => a.replace(/.json/g, '_mip.json')
+//     );
+// }
 
 // matt's hack
 // audioManifest = audioManifest.map( a => 'assets/' + a );
