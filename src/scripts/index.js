@@ -65,15 +65,15 @@ if (window.isIronSource || isMobile) {
 // tempManifest = tempManifest.map( a => 'assets/' + a );
 
 // ironsource absolute paths:
-if (window.manifestPath) {
-    console.log('need to add absolute path : ' + window.manifestPath);
-    audioManifest = audioManifest.map(a => window.manifestPath + a);
-    tempManifest = tempManifest.map(a => window.manifestPath + a);
-    window.ASSET_URL = window.manifestPath;
-}
-else {
-    window.ASSET_URL = '';
-}
+// if (window.manifestPath) {
+//     console.log('need to add absolute path : ' + window.manifestPath);
+//     audioManifest = audioManifest.map(a => window.manifestPath + a);
+//     tempManifest = tempManifest.map(a => window.manifestPath + a);
+//     window.ASSET_URL = window.manifestPath;
+// }
+// else {
+//     window.ASSET_URL = '';
+// }
 //
 console.log(tempManifest);
 
