@@ -1,0 +1,31 @@
+{
+  "name": "pbs-themes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run dev",
+    "fix-file-names": "fix-file-names ./raw-assets",
+    "dev": "node ./tools/build.js",
+    "prod": "node ./tools/build.js production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/goodboydigital/pbs-themes.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/goodboydigital/pbs-themes#readme",
+  "dependencies": {
+    "@goodboydigital/bulldog": "^1.5.0",
+    "@goodboydigital/fido-build": "^0.5.8",
+    "@pixi/filter-glow": "^2.5.0",
+    "clipboard": "^2.0.1",
+    "gsap": "^1.20.6",
+    "howler": "^2.0.12",
+    "pixi": "^0.3.1",
+    "pixi-filters": "^2.6.1",
+    "pixi.js": "^4.7.3",
+    "signals": "^1.0.0"
+  }
+}
