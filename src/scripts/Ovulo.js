@@ -32,11 +32,17 @@ export default class Entity extends PIXI.Container {
         this.sprite.scale.y = this.startScale + Math.sin(this.scaleSin) * this.startScale * 0.1
     }
     protected() {
+        if(this.isProtected){
+            return;
+        }
         this.isProtected = true;
         utils.addColorTween(this.sprite, this.sprite.tint, 0xFFFFFF);
 
     }
     unprotected() {
+        if(!this.isProtected){
+            return;
+        }
         this.isProtected = false;
         utils.addColorTween(this.sprite, this.sprite.tint, 0xFF0000);
     }
