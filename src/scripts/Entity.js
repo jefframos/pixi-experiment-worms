@@ -33,7 +33,7 @@ export default class Entity extends PIXI.Container {
         this.maxVelocity = 65// * GAME_SCALES;
         this.maxAngularVelocity = 60// * GAME_SCALES;
         this.minAngularVelocity = 20// * GAME_SCALES;
-        this.angularSpeedLimit = 0.15// * GAME_SCALES;
+        this.angularSpeedLimit = 0.2// * GAME_SCALES;
 
         this.collideFrameSkip = 20// * GAME_SCALES;
 
@@ -289,8 +289,8 @@ export default class Entity extends PIXI.Container {
 
     }
     createTrail() {
-        this.trail = new Trail(this.parentContainer, 40, 'assets/game/full_power_effect.png');
-        this.trail.trailTick = this.radius * 0.2;
+        this.trail = new Trail(this.parentContainer, 30, 'assets/game/full_power_effect.png');
+        this.trail.trailTick = this.radius * 0.25;
         this.trail.speed = 0.75;
         this.trail.frequency = 0.001
         this.trail.update(0, this.position)

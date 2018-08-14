@@ -16,7 +16,7 @@ export default class Ovario extends PIXI.Container {
         this.addChild(this.sprite)
     }
     hit(){
-        console.log('HIT');
+        // console.log('HIT');
         
     }
     update(delta) {

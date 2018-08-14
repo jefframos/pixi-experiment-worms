@@ -125,7 +125,34 @@ export default class WormsContainer extends PIXI.Container {
 
         this.HUDContainer = new PIXI.Container();
         this.addChild(this.HUDContainer);
-
+        
+        let zoomInContainer = new PIXI.Container();
+        let zoomIn = new PIXI.Graphics().beginFill(0x333333).drawRect(0,0,this.maxSizeResolution * 0.075,this.maxSizeResolution * 0.075)
+        zoomInContainer.addChild(zoomIn);
+        let zoomInLabel = new PIXI.Text('ZOOM\nIN');
+        zoomInLabel.style.fill = 0xFFFFFF;
+        zoomInLabel.scale.set(zoomIn.width / zoomInLabel.width * 0.7)
+        zoomInContainer.addChild(zoomInLabel);
+        this.HUDContainer.addChild(zoomInContainer);
+        zoomInContainer.interactive = true;
+        zoomInContainer.buttonMode = true;
+        zoomInContainer.on('click', this.onZoomIn.bind(this)).on('tap', this.onZoomIn.bind(this));
+        zoomInContainer.x = config.width - zoomInContainer.width - 5
+        zoomInContainer.y = 5
+        
+        let zoomOutContainer = new PIXI.Container();
+        let zoomOut = new PIXI.Graphics().beginFill(0x333333).drawRect(0,0,this.maxSizeResolution * 0.075,this.maxSizeResolution * 0.075)
+        zoomOutContainer.addChild(zoomOut);        
+        let zoomOutLabel = new PIXI.Text('ZOOM\nOUT');
+        zoomOutLabel.style.fill = 0xFFFFFF;
+        zoomOutLabel.scale.set(zoomOut.width / zoomOutLabel.width * 0.7)
+        zoomOutContainer.addChild(zoomOutLabel);
+        this.HUDContainer.addChild(zoomOutContainer);
+        zoomOutContainer.interactive = true;
+        zoomOutContainer.buttonMode = true;
+        zoomOutContainer.on('click', this.onZoomOut.bind(this)).on('tap', this.onZoomOut.bind(this));
+        zoomOutContainer.x = config.width - (zoomOutContainer.width * 3) - 5
+        zoomOutContainer.y = 5
 
         this.ovulo = new Ovulo(this.maxSizeResolution * 0.1);
 
@@ -139,7 +166,7 @@ export default class WormsContainer extends PIXI.Container {
 
         this.ovario = new Ovario(this.maxSizeResolution * 0.3);
 
-        this.ovario.x = config.width * 0.85;
+        this.ovario.x = config.width / 2;
         this.ovario.y = config.height / 2;
 
         this.entityContainer.addChild(this.ovario)
@@ -167,7 +194,14 @@ export default class WormsContainer extends PIXI.Container {
         this.entityList = [];
         this.counter = new PIXI.Text('0');
         this.counter.style.fill = 0xFFFFFF;
+        this.counter.style.fontSize = 12
         this.HUDContainer.addChild(this.counter)
+        
+        this.instructions = new PIXI.Text('drag the ovulo to move\nclick to release sperm');
+        this.instructions.style.fill = 0xFFFFFF;
+        this.HUDContainer.addChild(this.instructions)
+        this.instructions.style.fontSize = 12
+        this.counter.y = this.instructions.height + 2
 
         this.absorvingElement = null;
 
@@ -176,6 +210,16 @@ export default class WormsContainer extends PIXI.Container {
         this.centerPivot();
 
         // this.add10({ x: config.width / 2, y: 0 });
+    }
+    onZoomOut() {
+        this.currentZoom -= 0.1;
+        this.centerPivot();
+        this.updateZoom();
+    }
+    onZoomIn() {
+        this.currentZoom += 0.1;
+        this.centerPivot();
+        this.updateZoom();
     }
     onWheelManager(e) {
         var evt = window.event || e;
@@ -319,14 +363,14 @@ export default class WormsContainer extends PIXI.Container {
         entity.kill();
         this.absorvingElement = entity;
     }
-    addParticleExplosion(pos, target, quant = 6) {
+    addParticleExplosion(pos, target, quant = 5) {
         for (let index = 0; index < quant; index++) {
             let scl = Math.random() * 0.005 + 0.01
             this.particleSystem.show({ x: pos.x, y: pos.y }, 1, {
-                texture: 'spark2.png',
+                texture: 'full_power_effect_bkp.png',
                 customContainer: this.entityContainer,
                 delay: 0.1 * index,
-                blendMode: 1,
+                // blendMode: 1,
                 tint: target.sprite.tint,
                 // tint: 0x44a7f4,
                 scale: scl,
@@ -396,7 +440,7 @@ export default class WormsContainer extends PIXI.Container {
         // if (this.mouseDown) {
         this.collideEnvironment = false;
         let ovuloGlobal = this.ovulo.getGlobalPosition();
-        if (utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y) < this.ovulo.width / 2) {
+        if (utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y) < this.ovulo.width / 1.5) {
             this.holdingOvulo = true;
             // this.holdingOvuloDiff = { x: this.mousePosition.x - ovuloGlobal.x, y: this.mousePosition.y - ovuloGlobal.y }
             this.holdingOvuloDiff = { x: this.mousePosition.x - this.ovulo.x, y: this.mousePosition.y - this.ovulo.y }
@@ -418,7 +462,8 @@ export default class WormsContainer extends PIXI.Container {
         this.ovulo.zeroVel();
     }
     onMouseUp(e) {
-        if (!this.holdingOvulo && !this.collideEnvironment) {
+        let canAdd = e.data.global.y > this.maxSizeResolution * 0.075
+        if (canAdd && !this.holdingOvulo && !this.collideEnvironment) {
             let localPos = this.entityContainer.toLocal(e.data.global)
             this.add10(localPos);
         }

@@ -8,7 +8,7 @@ export default class ParticleSystem extends PIXI.Container
 
         this.particles = [];
         window.PARTICLE_POOL = [];
-        this.maxParticles = 60;
+        this.maxParticles = 150;
 
     }
 
@@ -125,10 +125,12 @@ export default class ParticleSystem extends PIXI.Container
         this.totParticles = tot;
         for (var i = 0; i < this.totParticles; i++)
         {
-            if (this.particles.lenght > this.maxParticles)
+            if (this.particles.length > this.maxParticles)
             {
                 break;
             }
+            // console.log();
+            
             let coin;
             if (window.PARTICLE_POOL.length)
             {
