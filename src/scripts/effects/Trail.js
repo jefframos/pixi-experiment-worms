@@ -239,17 +239,17 @@ export default class Trail {//} extends PIXI.Container {
 		this.drawPointsTexture();
 	}
 
-	update(delta, pos) {
+	update(delta, pos, forceZero) {
 
 		this.nextPointTimer -= delta;
 
 		let zeroScale = true;
 
 		for (var i = this.trailDots.length - 1; i >= 0; i--) {
-			this.trailDots[i].scale.x -= this.speed//delta * this.speed;
-			this.trailDots[i].scale.y -= this.speed//delta * this.speed;
+			this.trailDots[i].scale.x -= this.speed * delta//delta * this.speed;
+			this.trailDots[i].scale.y -= this.speed * delta//delta * this.speed;
 
-			if (this.trailDots[i].scale.x <= 0) {
+			if (this.trailDots[i].scale.x <= 0 || forceZero) {
 				this.trailDots[i].scale.set(0)
 			} else {
 				zeroScale = false;
