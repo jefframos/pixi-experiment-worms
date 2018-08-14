@@ -15,7 +15,7 @@ export default class Entity extends PIXI.Container {
         this.sprite.buttonMode = true;
         this.addChild(this.sprite);
         this.velocity = { x: 0, y: 0 }
-        this.maxVel = 200;
+        this.maxVel = 200;// * GAME_SCALES;
     }
     zeroVel() {
         this.velocity = { x: 0, y: 0 }

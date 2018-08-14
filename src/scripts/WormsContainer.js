@@ -14,6 +14,9 @@ export default class WormsContainer extends PIXI.Container {
         // this.negative = new PIXI.filters.ColorMatrixFilter();
         // this.negative.negative();
         // this.filters = [this.negative]
+        this.maxSizeResolution = Math.max(config.width, config.height);
+        window.GAME_SCALES = this.maxSizeResolution / desktopResolution.width;
+
         window.ENTITY_ID = 0;
         window.ENTITY_POOL = [];
 
@@ -124,7 +127,7 @@ export default class WormsContainer extends PIXI.Container {
         this.addChild(this.HUDContainer);
 
 
-        this.ovulo = new Ovulo();
+        this.ovulo = new Ovulo(this.maxSizeResolution * 0.1);
 
         this.ovulo.x = config.width / 2;
         this.ovulo.y = config.height / 2;
@@ -134,7 +137,7 @@ export default class WormsContainer extends PIXI.Container {
         this.entityContainer.addChild(this.ovulo)
 
 
-        this.ovario = new Ovario(350);
+        this.ovario = new Ovario(this.maxSizeResolution * 0.3);
 
         this.ovario.x = config.width * 0.85;
         this.ovario.y = config.height / 2;
@@ -202,7 +205,7 @@ export default class WormsContainer extends PIXI.Container {
             ENTITY_POOL.shift();
         }
         if (!ent) {
-            ent = new Entity(this.trailContainer);
+            ent = new Entity(this.trailContainer, this.maxSizeResolution * 0.03);
         }
         return ent
     }
@@ -252,6 +255,7 @@ export default class WormsContainer extends PIXI.Container {
     }
     update(delta) {
         delta *= 1.5
+        delta *= GAME_SCALES;
         if (utils.distance(this.ovulo.x, this.ovulo.y, this.ovario.x, this.ovario.y) < this.ovario.radius/2 - this.ovulo.radius/2) {
             this.ovulo.protected()
         }else{

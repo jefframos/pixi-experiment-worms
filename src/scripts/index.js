@@ -18,13 +18,19 @@ window.console.groupCollapsed = function (teste) { }
 
 
 window.desktopResolution = {
-    width: 1027,
+    width: 1024,
     height: 768
+}
+if(window.isMobile){
+    config.width = window.innerWidth
+    config.height = window.innerHeight
+}else{
+    config.width = desktopResolution.width
+    config.height = desktopResolution.height
+
 }
 // if (!window.isIronSource) {
 //     if (!window.isMobile) {
-        config.width = desktopResolution.width
-        config.height = desktopResolution.height
 //     }
 //     window.addEventListener("focus", unPause, true);
 //     window.addEventListener("blur", pause, true);
@@ -135,6 +141,14 @@ window.onresize = function () {
         width: desktopResolution.width * scl,
         height: desktopResolution.height * scl
     }
+
+    if(window.isMobile){
+        newSize.width = window.innerWidth
+        newSize.height = window.innerHeight
+        // return
+    }
+
+
     window.app.renderer.view.style.width = newSize.width + 'px'
     window.app.renderer.view.style.height = newSize.height + 'px'
 

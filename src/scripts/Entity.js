@@ -2,16 +2,16 @@ import * as PIXI from 'pixi.js';
 import Trail from './effects/Trail'
 import Signals from 'signals'
 export default class Entity extends PIXI.Container {
-    constructor(parentContainer) {
+    constructor(parentContainer, radius) {
         super();
-
+        this.radius = radius;
         this.onOvuloCollide = new Signals();
         this.onKill = new Signals();
         this.onEnemyCollide = new Signals();
         this.entity = new PIXI.Sprite.from('assets/game/head2.png');//new PIXI.Graphics().beginFill(0xFFFFFF * Math.random()).drawCircle(0,0,5);
         this.innerHead = new PIXI.Sprite.from('assets/game/inner-head.png');//new PIXI.Graphics().beginFill(0xFFFFFF * Math.random()).drawCircle(0,0,5);
         // this.entity = new PIXI.Sprite.from('assets/game/pickup.png');//new PIXI.Graphics().beginFill(0xFFFFFF * Math.random()).drawCircle(0,0,5);
-        this.radius = 25;
+        // this.radius = 25;
         this.color = 0xFFFFFF// * Math.random();
         this.entity.tint = this.color;
         this.addChild(this.entity)
@@ -29,12 +29,13 @@ export default class Entity extends PIXI.Container {
 
         this.parentContainer = parentContainer;
 
-        this.angPlusAccum = 5//15;
-        this.maxVelocity = 65;
-        this.maxAngularVelocity = 50;
-        this.angularSpeedLimit = 0.15;
+        this.angPlusAccum = 10// * GAME_SCALES//15;
+        this.maxVelocity = 65// * GAME_SCALES;
+        this.maxAngularVelocity = 60// * GAME_SCALES;
+        this.minAngularVelocity = 20// * GAME_SCALES;
+        this.angularSpeedLimit = 0.15// * GAME_SCALES;
 
-        this.collideFrameSkip = 20;
+        this.collideFrameSkip = 20// * GAME_SCALES;
 
         // this.sinSpeed = (0.5 + Math.random()) * angPlusAccum;
         // this.cosSpeed = (0.5 + Math.random()) * angPlusAccum;
@@ -233,8 +234,8 @@ export default class Entity extends PIXI.Container {
 
         this.properAngle = Math.atan2(this.vel.y, this.vel.x);
 
-        let maxAngVel = this.maxAngularVelocity;
-        let angVel = Math.random() * maxAngVel * 0.5
+        let maxAngVel = this.maxAngularVelocity - this.minAngularVelocity;
+        let angVel = this.minAngularVelocity + Math.random() * maxAngVel * 0.5
         this.angVel = { x: angVel, y: angVel };
 
         if (this.entity.scale.x <= 0 && this.innerHead.scale.x <= 0) {
