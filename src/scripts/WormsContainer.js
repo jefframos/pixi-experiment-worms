@@ -125,9 +125,9 @@ export default class WormsContainer extends PIXI.Container {
 
         this.HUDContainer = new PIXI.Container();
         this.addChild(this.HUDContainer);
-        
+
         let zoomInContainer = new PIXI.Container();
-        let zoomIn = new PIXI.Graphics().beginFill(0x333333).drawRect(0,0,this.maxSizeResolution * 0.075,this.maxSizeResolution * 0.075)
+        let zoomIn = new PIXI.Graphics().beginFill(0x333333).drawRect(0, 0, this.maxSizeResolution * 0.075, this.maxSizeResolution * 0.075)
         zoomInContainer.addChild(zoomIn);
         let zoomInLabel = new PIXI.Text('ZOOM\nIN');
         zoomInLabel.style.fill = 0xFFFFFF;
@@ -139,10 +139,10 @@ export default class WormsContainer extends PIXI.Container {
         zoomInContainer.on('click', this.onZoomIn.bind(this)).on('tap', this.onZoomIn.bind(this));
         zoomInContainer.x = config.width - zoomInContainer.width - 5
         zoomInContainer.y = 5
-        
+
         let zoomOutContainer = new PIXI.Container();
-        let zoomOut = new PIXI.Graphics().beginFill(0x333333).drawRect(0,0,this.maxSizeResolution * 0.075,this.maxSizeResolution * 0.075)
-        zoomOutContainer.addChild(zoomOut);        
+        let zoomOut = new PIXI.Graphics().beginFill(0x333333).drawRect(0, 0, this.maxSizeResolution * 0.075, this.maxSizeResolution * 0.075)
+        zoomOutContainer.addChild(zoomOut);
         let zoomOutLabel = new PIXI.Text('ZOOM\nOUT');
         zoomOutLabel.style.fill = 0xFFFFFF;
         zoomOutLabel.scale.set(zoomOut.width / zoomOutLabel.width * 0.7)
@@ -196,7 +196,7 @@ export default class WormsContainer extends PIXI.Container {
         this.counter.style.fill = 0xFFFFFF;
         this.counter.style.fontSize = 12
         this.HUDContainer.addChild(this.counter)
-        
+
         this.instructions = new PIXI.Text('drag the ovulo to move\nclick to release sperm');
         this.instructions.style.fill = 0xFFFFFF;
         this.HUDContainer.addChild(this.instructions)
@@ -226,14 +226,6 @@ export default class WormsContainer extends PIXI.Container {
         var delta = evt.detail ? evt.detail : evt.wheelDelta;
         const wheelForce = (delta / 120) / 8;
         this.currentZoom += wheelForce;
-
-        // let loc = this.content.toLocal({ x: e.clientX, y: e.clientY })
-        // let pivotDiff = { x:this.content.width / 2 - loc.x, y:this.content.height / 2 - loc.y}
-        // let middle = { x:this.content.width / 2 , y:this.content.height / 2 }
-        // let newPivot = { x:middle.x - pivotDiff.x , y: middle.y - pivotDiff.y }
-
-        // this.pivotGr.x = newPivot.x
-        // this.pivotGr.y = newPivot.y
         this.updateZoom();
     }
     updateZoom() {
@@ -255,54 +247,54 @@ export default class WormsContainer extends PIXI.Container {
     }
     add10(pos = { x: 0, y: 0 }) {
         for (let index = 0; index < 10; index++) {
-            let ent = this.getEntity();
-            let ang = Math.random() * Math.PI * 2;
-            ent.x = pos.x + Math.cos(ang) * 30;
-            ent.y = pos.y + Math.sin(ang) * 30;
-            ent.reset();
-            ent.onOvuloCollide.add((target) => {
-                if(!this.ovulo.isProtected){
-                    this.absorve(target, this.ovulo);
-                }
-            })
-            ent.onEnemyCollide.add((target, enemy) => {
-                // if(!this.ovulo.isProtected){
-                    
+            setTimeout(() => {
+
+                let ent = this.getEntity();
+                let ang = Math.random() * Math.PI * 2;
+                ent.x = pos.x + Math.cos(ang) * this.maxSizeResolution * 0.02;
+                ent.y = pos.y + Math.sin(ang) * this.maxSizeResolution * 0.02;
+                ent.reset();
+                ent.onOvuloCollide.add((target) => {
+                    if (!this.ovulo.isProtected) {
+                        this.absorve(target, this.ovulo);
+                    }
+                })
+                ent.onEnemyCollide.add((target, enemy) => {
                     enemy.hit();
                     this.enemyAttack(target, enemy);
-                // }
-            })
-            ent.onKill.add((target) => {
-                //double verify it the entity was removed from the main entity list
-                for (let index = 0; index < this.entityList.length; index++) {
-                    const element = this.entityList[index];
-                    if (element.id == target.id) {
-                        this.entityList.splice(index, 1);
-                        break
+                })
+                ent.onKill.add((target) => {
+                    //double verify it the entity was removed from the main entity list
+                    for (let index = 0; index < this.entityList.length; index++) {
+                        const element = this.entityList[index];
+                        if (element.id == target.id) {
+                            this.entityList.splice(index, 1);
+                            break
+                        }
                     }
-                }
-                //avvoid that the same entity will be used twice on the pool
-                this.counter.text = this.entityList.length;
-                for (let index = 0; index < ENTITY_POOL.length; index++) {
-                    const element = ENTITY_POOL[index];
-                    if (element.id == target.id) {
-                        return
+                    //avvoid that the same entity will be used twice on the pool
+                    this.counter.text = this.entityList.length;
+                    for (let index = 0; index < ENTITY_POOL.length; index++) {
+                        const element = ENTITY_POOL[index];
+                        if (element.id == target.id) {
+                            return
+                        }
                     }
-                }
-                ENTITY_POOL.push(target);
-                this.absorvingElement = null;
-            })
-            this.entityContainer.addChild(ent)
-            this.entityList.push(ent)
+                    ENTITY_POOL.push(target);
+                    this.absorvingElement = null;
+                })
+                this.entityContainer.addChild(ent)
+                this.entityList.push(ent)
+            }, 50 * index);
         }
         this.counter.text = this.entityList.length;
     }
     update(delta) {
         delta *= 1.5
         delta *= GAME_SCALES;
-        if (utils.distance(this.ovulo.x, this.ovulo.y, this.ovario.x, this.ovario.y) < this.ovario.radius/2 - this.ovulo.radius/2) {
+        if (utils.distance(this.ovulo.x, this.ovulo.y, this.ovario.x, this.ovario.y) < this.ovario.radius / 2 - this.ovulo.radius / 2) {
             this.ovulo.protected()
-        }else{
+        } else {
             this.ovulo.unprotected()
         }
         if (this.absorvingElement) {
@@ -340,6 +332,7 @@ export default class WormsContainer extends PIXI.Container {
 
         }
         this.ovulo.update(delta);
+        this.ovario.update(delta);
         this.centerPivot();
         if (this.particleSystem) {
             this.particleSystem.update(delta);
@@ -350,7 +343,7 @@ export default class WormsContainer extends PIXI.Container {
             }
         }
     }
-    enemyAttack(entity, target) {        
+    enemyAttack(entity, target) {
         this.addParticleExplosion(entity, target)
     }
     absorve(entity, target) {
@@ -406,7 +399,7 @@ export default class WormsContainer extends PIXI.Container {
             })
         }
     }
-    centerPivot(){
+    centerPivot() {
         this.entityContainer.pivot.x = this.ovulo.x //+ config.width / 2;
         this.entityContainer.pivot.y = this.ovulo.y //+ config.height / 2;
 
@@ -417,46 +410,39 @@ export default class WormsContainer extends PIXI.Container {
 
     }
     onMouseMove(e) {
+        if (!this.holdingOvulo) {
+            return;
+        }
         this.mousePosition = e.data.global;
-        if (this.holdingOvulo) {
-
-            // if (this.absorvingElement) {
-            //     let absorvDiff = { x: this.ovulo.x - this.absorvingElement.x, y: this.ovulo.y -this.absorvingElement.y }
-
-            //     this.absorvingElement.x = this.ovulo.x+absorvDiff.x;
-            //     this.absorvingElement.y = this.ovulo.y+absorvDiff.y;
-            // }
-
+        let ovuloGlobal = this.ovulo.getGlobalPosition();
+        let dist = utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y);
+        if (this.holdingOvulo && dist > this.ovulo.radius / 2) {
             let ovuloGlobal = this.ovulo.getGlobalPosition();
-
-            let angle = Math.atan2(this.mousePosition.y - ovuloGlobal.y, this.mousePosition.x - ovuloGlobal.x)
-
+            let angle = Math.atan2(this.mousePosition.y - ovuloGlobal.y, this.mousePosition.x - ovuloGlobal.x);
             this.ovulo.applyVelocity(angle);
+        } else {
+            this.ovulo.zeroVel();
         }
     }
 
     onMouseDown(e) {
         this.mousePosition = e.data.global;
-        // if (this.mouseDown) {
         this.collideEnvironment = false;
         let ovuloGlobal = this.ovulo.getGlobalPosition();
-        if (utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y) < this.ovulo.width / 1.5) {
+        if (utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y) < this.ovulo.radius / 2) {
             this.holdingOvulo = true;
-            // this.holdingOvuloDiff = { x: this.mousePosition.x - ovuloGlobal.x, y: this.mousePosition.y - ovuloGlobal.y }
             this.holdingOvuloDiff = { x: this.mousePosition.x - this.ovulo.x, y: this.mousePosition.y - this.ovulo.y }
         }
         for (let index = 0; index < this.enemyList.length; index++) {
             const element = this.enemyList[index];
             let elementGlobal = element.getGlobalPosition();
 
-            if (utils.distance(this.mousePosition.x, this.mousePosition.y, elementGlobal.x, elementGlobal.y) < element.width / 2) {
+            if (utils.distance(this.mousePosition.x, this.mousePosition.y, elementGlobal.x, elementGlobal.y) < element.radius / 2) {
                 this.collideEnvironment = true;
             }
         }
-
-        // }
     }
-    onMouseOutside(e){
+    onMouseOutside(e) {
         this.holdingOvulo = false;
         this.collideEnvironment = true;
         this.ovulo.zeroVel();

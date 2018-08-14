@@ -99,7 +99,7 @@ export default class Entity extends PIXI.Container {
         }
         for (let index = 0; index < enemiesList.length; index++) {
             const enemy = enemiesList[index];
-            if (utils.distance(this.x, this.y, enemy.x, enemy.y) < enemy.width / 2) {
+            if (utils.distance(this.x, this.y, enemy.x, enemy.y) < enemy.radius/2) {
                 this.onEnemyCollide.dispatch(this, enemy);
                 this.kill();
             }
@@ -112,7 +112,7 @@ export default class Entity extends PIXI.Container {
         }
         this.target = target;
         this.targetAngle = Math.atan2(this.y - this.target.y, this.x - this.target.x) + Math.PI;
-        if (utils.distance(this.x, this.y, this.target.x, this.target.y) < this.target.width / 2) {
+        if (utils.distance(this.x, this.y, this.target.x, this.target.y) < this.target.radius / 2) {
             if (canAbsorb) {
                 this.onOvuloCollide.dispatch(this);
                 this.recalcAng(this.targetAngle)// + Math.PI);
