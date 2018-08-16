@@ -3,7 +3,7 @@ import Signals from 'signals'
 export default class Ovario extends PIXI.Container {
     constructor(radius = 80) {
         super();
-        this.sprite = new PIXI.Sprite.from('assets/game/head.png');
+        this.sprite = new PIXI.Sprite.from('assets/game/ovulo.png');
         this.sprite.anchor.set(0.5);
         // this.ovulo.x = config.width / 2;
         // this.ovulo.y = config.height / 2;
@@ -27,4 +27,6 @@ export default class Ovario extends PIXI.Container {
         this.sprite.x =  Math.cos(this.scaleSin) * this.radius * 0.0075
         this.sprite.y =  Math.sin(this.scaleSin) * this.radius * 0.005
     }
+
+   
 }

@@ -33,7 +33,7 @@ export default class Entity extends PIXI.Container {
         this.maxVelocity = 65// * GAME_SCALES;
         this.maxAngularVelocity = 60// * GAME_SCALES;
         this.minAngularVelocity = 20// * GAME_SCALES;
-        this.angularSpeedLimit = 0.2// * GAME_SCALES;
+        this.angularSpeedLimit = 0.1// * GAME_SCALES;
 
         this.collideFrameSkip = 20// * GAME_SCALES;
 
@@ -112,7 +112,7 @@ export default class Entity extends PIXI.Container {
         }
         this.target = target;
         this.targetAngle = Math.atan2(this.y - this.target.y, this.x - this.target.x) + Math.PI;
-        if (utils.distance(this.x, this.y, this.target.x, this.target.y) < this.target.radius / 2) {
+        if (utils.distance(this.x, this.y, this.target.x, this.target.y) < this.target.width / 2){//this.target.radius / 2) {
             if (canAbsorb) {
                 this.onOvuloCollide.dispatch(this);
                 this.recalcAng(this.targetAngle)// + Math.PI);
@@ -144,8 +144,8 @@ export default class Entity extends PIXI.Container {
             return;
         }
         if (this.dying) {
-            this.absorving(delta * 2);
-            return;
+            this.absorving(delta * 3);
+            // return;
         }
         this.collideTimer -= delta;
         this.recalcAngleSpeedTimer -= delta;
@@ -255,23 +255,24 @@ export default class Entity extends PIXI.Container {
             return;
         }
         this.isBeenAbsorved = true;
+        let temp = 0.05
         // return
-        this.entity.scale.x -= delta * 0.05
-        this.entity.scale.y -= delta * 0.05
+        this.entity.scale.x -= delta * temp
+        this.entity.scale.y -= delta * temp
 
         this.entity.scale.x = Math.max(this.entity.scale.x, 0)
         this.entity.scale.y = Math.max(this.entity.scale.x, 0)
 
-        this.innerHead.scale.x -= delta * 0.05
-        this.innerHead.scale.y -= delta * 0.05
+        this.innerHead.scale.x -= delta * temp
+        this.innerHead.scale.y -= delta * temp
 
         this.innerHead.scale.x = Math.max(this.innerHead.scale.x, 0)
         this.innerHead.scale.y = Math.max(this.innerHead.scale.x, 0)
 
 
         let newPos = {
-            x: this.x + Math.cos(this.properAngle) * this.radius * 0.1,
-            y: this.y + Math.sin(this.properAngle) * this.radius * 0.1
+            x: this.x + Math.cos(this.properAngle) * this.radius * temp,
+            y: this.y + Math.sin(this.properAngle) * this.radius * temp
         }
         if (this.trail) {
             this.trail.update(delta * 4, newPos)

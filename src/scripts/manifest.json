@@ -3,12 +3,12 @@
         "dist\\assets\\fx\\fx0.json",
         "dist\\assets\\fx\\fx1.json",
         "dist\\assets\\game\\full_power_effect.png",
-        "dist\\assets\\game\\full_power_effect_bkp.png",
-        "dist\\assets\\game\\head.png",
         "dist\\assets\\game\\head2.png",
         "dist\\assets\\game\\inner-head.png",
         "dist\\assets\\game\\innerhead.png",
-        "dist\\assets\\particles\\particles0.json"
+        "dist\\assets\\game\\ovulo.png",
+        "dist\\assets\\particles\\particles0.json",
+        "dist\\assets\\ui\\ui0.json"
     ],
     "audio": []
 }

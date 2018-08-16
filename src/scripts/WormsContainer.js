@@ -2,9 +2,8 @@ import * as PIXI from 'pixi.js';
 import ParticleSystem from './effects/ParticleSystem'
 import Entity from './Entity'
 import Ovulo from './Ovulo'
-import Enemy from './Enemy'
+import UIButton from './UIButton'
 import Ovario from './Ovario'
-import FILTERS from 'pixi-filters'
 export default class WormsContainer extends PIXI.Container {
     constructor() {
         super();
@@ -126,33 +125,16 @@ export default class WormsContainer extends PIXI.Container {
         this.HUDContainer = new PIXI.Container();
         this.addChild(this.HUDContainer);
 
-        let zoomInContainer = new PIXI.Container();
-        let zoomIn = new PIXI.Graphics().beginFill(0x333333).drawRect(0, 0, this.maxSizeResolution * 0.075, this.maxSizeResolution * 0.075)
-        zoomInContainer.addChild(zoomIn);
-        let zoomInLabel = new PIXI.Text('ZOOM\nIN');
-        zoomInLabel.style.fill = 0xFFFFFF;
-        zoomInLabel.scale.set(zoomIn.width / zoomInLabel.width * 0.7)
-        zoomInContainer.addChild(zoomInLabel);
-        this.HUDContainer.addChild(zoomInContainer);
-        zoomInContainer.interactive = true;
-        zoomInContainer.buttonMode = true;
-        zoomInContainer.on('click', this.onZoomIn.bind(this)).on('tap', this.onZoomIn.bind(this));
-        zoomInContainer.x = config.width - zoomInContainer.width - 5
-        zoomInContainer.y = 5
 
-        let zoomOutContainer = new PIXI.Container();
-        let zoomOut = new PIXI.Graphics().beginFill(0x333333).drawRect(0, 0, this.maxSizeResolution * 0.075, this.maxSizeResolution * 0.075)
-        zoomOutContainer.addChild(zoomOut);
-        let zoomOutLabel = new PIXI.Text('ZOOM\nOUT');
-        zoomOutLabel.style.fill = 0xFFFFFF;
-        zoomOutLabel.scale.set(zoomOut.width / zoomOutLabel.width * 0.7)
-        zoomOutContainer.addChild(zoomOutLabel);
-        this.HUDContainer.addChild(zoomOutContainer);
-        zoomOutContainer.interactive = true;
-        zoomOutContainer.buttonMode = true;
-        zoomOutContainer.on('click', this.onZoomOut.bind(this)).on('tap', this.onZoomOut.bind(this));
-        zoomOutContainer.x = config.width - (zoomOutContainer.width * 3) - 5
-        zoomOutContainer.y = 5
+        this.minusZoom = new UIButton('zoom_out.png', 'zoom_out_press.png')
+        this.HUDContainer.addChild(this.minusZoom);
+        this.minusZoom.onMouseUp.add(this.onZoomOut.bind(this))
+
+        this.plusZoom = new UIButton('zoom_in.png', 'zoom_in_press.png')
+        this.HUDContainer.addChild(this.plusZoom);
+        this.plusZoom.onMouseUp.add(this.onZoomIn.bind(this))
+
+        this.buttonsList = [this.minusZoom, this.plusZoom];
 
         this.ovulo = new Ovulo(this.maxSizeResolution * 0.1);
 
@@ -169,11 +151,11 @@ export default class WormsContainer extends PIXI.Container {
         this.ovario.x = config.width / 2;
         this.ovario.y = config.height / 2;
 
-        this.entityContainer.addChild(this.ovario)
+        // this.entityContainer.addChild(this.ovario)
 
         this.enemyList = [];
 
-        this.enemyList.push(this.ovario);
+        // this.enemyList.push(this.ovario);
 
         this.mousePosition = { x: 0, y: 0 }
 
@@ -192,24 +174,89 @@ export default class WormsContainer extends PIXI.Container {
 
 
         this.entityList = [];
-        this.counter = new PIXI.Text('0');
+        this.counter = new PIXI.Text('0', { fontFamily: 'coveslight' });
         this.counter.style.fill = 0xFFFFFF;
-        this.counter.style.fontSize = 12
+        this.counter.style.fontSize = 26
         this.HUDContainer.addChild(this.counter)
 
-        this.instructions = new PIXI.Text('drag the ovulo to move\nclick to release sperm');
-        this.instructions.style.fill = 0xFFFFFF;
-        this.HUDContainer.addChild(this.instructions)
-        this.instructions.style.fontSize = 12
-        this.counter.y = this.instructions.height + 2
+        this.instrucionContainer = new PIXI.Container();
+        this.instructions1 = new PIXI.Text('Drag the orb to move', { fontFamily: 'coveslight' });
+        this.instructions1.style.fill = 0xFFFFFF;
+        this.instrucionContainer.addChild(this.instructions1)
+        this.instructions1.style.fontSize = 26
+        this.instructions1.scale.set(config.height / this.counter.height * 0.035)
+
+        this.instrucionContainer2 = new PIXI.Container();
+        this.instructions2 = new PIXI.Text('Tap to spawn', { fontFamily: 'coveslight' });
+        this.instructions2.style.fill = 0xFFFFFF;
+        this.instrucionContainer2.addChild(this.instructions2)
+        this.instructions2.style.fontSize = 26
+        this.instructions2.scale.set(config.height / this.counter.height * 0.035 * 0.8)
+        this.instrucionContainer2.sin = 0;
+        this.instrucionContainer2.target = this.instructions2;
+        // this.instrucionContainer.visible = false;
+
+        this.instrucionContainer.scale.set(0.8)
+
+        this.HUDContainer.addChild(this.instrucionContainer)
+        this.HUDContainer.addChild(this.instrucionContainer2)
+
+        this.mouseSprite = new PIXI.Sprite.from('mouse.png');
+        this.mouseSprite.scale.set(config.height / this.mouseSprite.height * 0.1)
+        this.mouseSprite.x = this.instructions1.width / 2;
+        this.mouseSprite.y = this.instructions1.y - this.mouseSprite.height * 0.5 - 20;
+        this.mouseSprite.anchor.set(0.5);
+        this.instrucionContainer.addChild(this.mouseSprite)
+
+        this.mouseEffectsArrows = [];
+        let arrow1 = new PIXI.Sprite.from('arrow_right.png');
+        let arrow2 = new PIXI.Sprite.from('arrow_right.png');
+        arrow1.anchor.set(0.5);
+        arrow1.scale.x = -1
+        arrow1.x = - 50
+
+        arrow2.anchor.set(0.5);
+        arrow2.x = 50
+        this.mouseSprite.addChild(arrow1)
+        this.mouseSprite.addChild(arrow2)
+
+        this.instrucionContainer.a1 = arrow1;
+        this.instrucionContainer.a2 = arrow2;
+        this.instrucionContainer.sin = 0;
+
+        this.margin = 30;
+
+        this.counter.x = this.margin
+        this.counter.y = this.margin
+        this.counter.scale.set(config.height / this.counter.height * 0.035)
 
         this.absorvingElement = null;
 
         this.currentZoom = 1;
 
-        this.centerPivot();
+        this.centerPivot(true);
 
-        // this.add10({ x: config.width / 2, y: 0 });
+        this.updateZoom();
+
+        this.resize();
+
+        // this.addSperms({ x: config.width / 2, y: 0 });
+    }
+    resize() {
+        this.minusZoom.scale.set(config.height / this.minusZoom.height * 0.1)
+        this.plusZoom.scale.set(config.height / this.plusZoom.height * 0.1)
+        this.minusZoom.x = this.minusZoom.width * 0.5 + this.margin
+        this.minusZoom.y = config.height - this.minusZoom.height * 0.5 - this.margin
+
+        this.plusZoom.x = config.width - this.plusZoom.width * 0.5 - this.margin
+        this.plusZoom.y = config.height - this.plusZoom.height * 0.5 - this.margin
+
+        this.instrucionContainer.x = config.width / 2 - this.instrucionContainer.width / 2;
+        this.instrucionContainer.y = this.plusZoom.y - this.instrucionContainer.height / 2 + this.mouseSprite.height * 0.5;
+
+        this.instrucionContainer2.x = config.width / 2 - this.instrucionContainer2.width / 2;
+        this.instrucionContainer2.y = this.margin
+
     }
     onZoomOut() {
         this.currentZoom -= 0.1;
@@ -226,11 +273,12 @@ export default class WormsContainer extends PIXI.Container {
         var delta = evt.detail ? evt.detail : evt.wheelDelta;
         const wheelForce = (delta / 120) / 8;
         this.currentZoom += wheelForce;
+        this.centerPivot()
         this.updateZoom();
     }
     updateZoom() {
         TweenLite.killTweensOf(this.entityContainer.scale)
-        this.currentZoom = Math.max(this.currentZoom, 0.5)
+        this.currentZoom = Math.max(this.currentZoom, 0.25)
         this.currentZoom = Math.min(this.currentZoom, 1.5)
         TweenLite.to(this.entityContainer.scale, 0.5, { x: this.currentZoom, y: this.currentZoom })
     }
@@ -245,19 +293,28 @@ export default class WormsContainer extends PIXI.Container {
         }
         return ent
     }
-    add10(pos = { x: 0, y: 0 }) {
-        for (let index = 0; index < 10; index++) {
-            setTimeout(() => {
+    addSperms(pos = { x: 0, y: 0 }, q = 25) {
+        if (!this.hidingInstruction2) {
+            this.hidingInstruction2 = true;
+            TweenLite.to(this.instrucionContainer2, 1, {
+                alpha: 0, onComplete: () => {
+                    this.instrucionContainer2.visible = false;
+                }
+            })
+        }
 
+        for (let index = 0; index < q; index++) {
+            setTimeout(() => {
                 let ent = this.getEntity();
                 let ang = Math.random() * Math.PI * 2;
                 ent.x = pos.x + Math.cos(ang) * this.maxSizeResolution * 0.02;
                 ent.y = pos.y + Math.sin(ang) * this.maxSizeResolution * 0.02;
                 ent.reset();
                 ent.onOvuloCollide.add((target) => {
-                    if (!this.ovulo.isProtected) {
+                    // if (!this.ovulo.isProtected) {
                         this.absorve(target, this.ovulo);
-                    }
+                        this.ovulo.hitted();
+                    // }
                 })
                 ent.onEnemyCollide.add((target, enemy) => {
                     enemy.hit();
@@ -285,11 +342,34 @@ export default class WormsContainer extends PIXI.Container {
                 })
                 this.entityContainer.addChild(ent)
                 this.entityList.push(ent)
+                this.counter.text = this.entityList.length;
             }, 50 * index);
         }
-        this.counter.text = this.entityList.length;
+    }
+    updateTapAnimation(delta) {
+        if (!this.instrucionContainer2.visible) {
+            return;
+        }
+        this.instrucionContainer2.sin += delta * 3;
+        this.instrucionContainer2.target.alpha = Math.sin(this.instrucionContainer2.sin) * 0.5 + 0.75;
+    }
+    updateMouseAnimation(delta) {
+        if (!this.instrucionContainer.visible) {
+            return;
+        }
+        this.instrucionContainer.sin += delta * 7;
+        this.instrucionContainer.a1.alpha = Math.sin(this.instrucionContainer.sin) + 0.15
+        this.instrucionContainer.a1.x = - 50 + Math.cos(this.instrucionContainer.sin) * 10 - 10
+        this.instrucionContainer.a1.scale.set(-Math.cos(this.instrucionContainer.sin) * 0.15 - 0.85, Math.cos(this.instrucionContainer.sin) * 0.15 + 0.85)
+
+        this.instrucionContainer.a2.alpha = Math.sin(this.instrucionContainer.sin) + 0.15
+        this.instrucionContainer.a2.x = 50 + -(Math.cos(this.instrucionContainer.sin) * 10 - 10)
+        this.instrucionContainer.a2.scale.set(Math.sin(this.instrucionContainer.sin) * 0.15 + 0.85, Math.sin(this.instrucionContainer.sin) * 0.15 + 0.85)
     }
     update(delta) {
+        this.updateMouseAnimation(delta);
+        this.updateTapAnimation(delta);
+
         delta *= 1.5
         delta *= GAME_SCALES;
         if (utils.distance(this.ovulo.x, this.ovulo.y, this.ovario.x, this.ovario.y) < this.ovario.radius / 2 - this.ovulo.radius / 2) {
@@ -302,7 +382,7 @@ export default class WormsContainer extends PIXI.Container {
             this.absorvingElement.vel.y *= 0.9
             this.absorvingElement.angVel = { x: 0, y: 0 }
             if (this.absorvingElement) {
-                this.absorvingElement.absorving(delta);
+                this.absorvingElement.absorving(delta);                
             }
             if (this.absorvingElement) {
                 this.absorvingElement.update(delta);
@@ -324,7 +404,7 @@ export default class WormsContainer extends PIXI.Container {
                 } else {
 
                     element.setTarget(this.ovulo, !this.absorvingElement);
-                    element.testEnemiesCollision(this.enemyList);
+                    // element.testEnemiesCollision(this.enemyList);
                     element.collide(this.entityList);
                     element.update(delta)
                 }
@@ -333,13 +413,21 @@ export default class WormsContainer extends PIXI.Container {
         }
         this.ovulo.update(delta);
         this.ovario.update(delta);
-        this.centerPivot();
+        // this.centerPivot();
         if (this.particleSystem) {
             this.particleSystem.update(delta);
             if (this.addTimer > 0) {
                 this.addTimer -= delta;
             } else {
                 this.addParticle(3);
+            }
+        }
+
+        if (this.holdingOvulo) {
+            let ovuloGlobal = this.ovulo.getGlobalPosition();
+            let dist = utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y);
+            if (dist < (this.ovulo.radius * this.entityContainer.scale.x) / 2) {
+                this.ovulo.zeroVel();
             }
         }
     }
@@ -356,11 +444,12 @@ export default class WormsContainer extends PIXI.Container {
         entity.kill();
         this.absorvingElement = entity;
     }
-    addParticleExplosion(pos, target, quant = 5) {
+    addParticleExplosion(pos, target, quant = 3) {
+        // return
         for (let index = 0; index < quant; index++) {
             let scl = Math.random() * 0.005 + 0.01
             this.particleSystem.show({ x: pos.x, y: pos.y }, 1, {
-                texture: 'full_power_effect_bkp.png',
+                texture: 'particle_sperm.png',
                 customContainer: this.entityContainer,
                 delay: 0.1 * index,
                 // blendMode: 1,
@@ -399,12 +488,17 @@ export default class WormsContainer extends PIXI.Container {
             })
         }
     }
-    centerPivot() {
-        this.entityContainer.pivot.x = this.ovulo.x //+ config.width / 2;
-        this.entityContainer.pivot.y = this.ovulo.y //+ config.height / 2;
+    centerPivot(force) {
+        // return
+        TweenLite.killTweensOf(this.entityContainer.pivot)
+        TweenLite.killTweensOf(this.entityContainer)
+        TweenLite.to(this.entityContainer.pivot, force ? 0 : 0.5, { x: this.ovulo.x, y: this.ovulo.y })
+        TweenLite.to(this.entityContainer, force ? 0 : 0.5, { x: config.width / 2, y: config.height / 2 })
+        // this.entityContainer.pivot.x = this.ovulo.x //+ config.width / 2;
+        // this.entityContainer.pivot.y = this.ovulo.y //+ config.height / 2;
 
-        this.entityContainer.x = config.width / 2;
-        this.entityContainer.y = config.height / 2;
+        // this.entityContainer.x = config.width / 2;
+        // this.entityContainer.y = config.height / 2;
     }
     onMouseClick(e) {
 
@@ -416,10 +510,18 @@ export default class WormsContainer extends PIXI.Container {
         this.mousePosition = e.data.global;
         let ovuloGlobal = this.ovulo.getGlobalPosition();
         let dist = utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y);
-        if (this.holdingOvulo && dist > this.ovulo.radius / 2) {
+        if (this.holdingOvulo && dist > (this.ovulo.radius * this.entityContainer.scale.x) / 2) {
             let ovuloGlobal = this.ovulo.getGlobalPosition();
             let angle = Math.atan2(this.mousePosition.y - ovuloGlobal.y, this.mousePosition.x - ovuloGlobal.x);
-            this.ovulo.applyVelocity(angle);
+            this.ovulo.applyVelocity(angle, Math.max(Math.min(2-this.entityContainer.scale.x, 1), 2));
+            if (!this.hidingInstruction) {
+                this.hidingInstruction = true;
+                TweenLite.to(this.instrucionContainer, 1, {
+                    alpha: 0, onComplete: () => {
+                        this.instrucionContainer.visible = false;
+                    }
+                })
+            }
         } else {
             this.ovulo.zeroVel();
         }
@@ -428,19 +530,26 @@ export default class WormsContainer extends PIXI.Container {
     onMouseDown(e) {
         this.mousePosition = e.data.global;
         this.collideEnvironment = false;
-        let ovuloGlobal = this.ovulo.getGlobalPosition();
-        if (utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y) < this.ovulo.radius / 2) {
-            this.holdingOvulo = true;
-            this.holdingOvuloDiff = { x: this.mousePosition.x - this.ovulo.x, y: this.mousePosition.y - this.ovulo.y }
-        }
-        for (let index = 0; index < this.enemyList.length; index++) {
-            const element = this.enemyList[index];
-            let elementGlobal = element.getGlobalPosition();
+        for (let index = 0; index < this.buttonsList.length; index++) {
+            const element = this.buttonsList[index];
 
-            if (utils.distance(this.mousePosition.x, this.mousePosition.y, elementGlobal.x, elementGlobal.y) < element.radius / 2) {
+            if (utils.distance(this.mousePosition.x, this.mousePosition.y, element.x, element.y) < (element.width / element.tex1.scale.x)) {
                 this.collideEnvironment = true;
             }
         }
+        let ovuloGlobal = this.ovulo.getGlobalPosition();
+        if (utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y) < this.ovulo.width* this.entityContainer.scale.x / 2) {
+            this.holdingOvulo = true;
+            // this.holdingOvuloDiff = { x: this.mousePosition.x - this.ovulo.x, y: this.mousePosition.y - this.ovulo.y }
+        }
+        // for (let index = 0; index < this.enemyList.length; index++) {
+        //     const element = this.enemyList[index];
+        //     let elementGlobal = element.getGlobalPosition();
+
+        //     if (utils.distance(this.mousePosition.x, this.mousePosition.y, elementGlobal.x, elementGlobal.y) < (element.radius * this.entityContainer.scale.x) / 2) {
+        //         this.collideEnvironment = true;
+        //     }
+        // }
     }
     onMouseOutside(e) {
         this.holdingOvulo = false;
@@ -448,10 +557,10 @@ export default class WormsContainer extends PIXI.Container {
         this.ovulo.zeroVel();
     }
     onMouseUp(e) {
-        let canAdd = e.data.global.y > this.maxSizeResolution * 0.075
+        let canAdd = true;//e.data.global.y > this.maxSizeResolution * 0.075
         if (canAdd && !this.holdingOvulo && !this.collideEnvironment) {
             let localPos = this.entityContainer.toLocal(e.data.global)
-            this.add10(localPos);
+            this.addSperms(localPos);
         }
         this.ovulo.zeroVel();
         this.holdingOvulo = false;
