@@ -201,6 +201,11 @@ export default class WormsContainer extends PIXI.Container {
         this.HUDContainer.addChild(this.instrucionContainer)
         this.HUDContainer.addChild(this.instrucionContainer2)
 
+        this.pixiLogo = new PIXI.Sprite.from('pixi_v5.png');
+        this.pixiLogo.scale.set(Math.min(this.maxSizeResolution / this.pixiLogo.height * 0.03,1))
+        this.pixiLogo.anchor.set(0.5);
+        this.HUDContainer.addChild(this.pixiLogo)
+
         this.mouseSprite = new PIXI.Sprite.from('mouse.png');
         this.mouseSprite.scale.set(config.height / this.mouseSprite.height * 0.1)
         this.mouseSprite.x = this.instructions1.width / 2;
@@ -257,6 +262,9 @@ export default class WormsContainer extends PIXI.Container {
         this.instrucionContainer2.x = config.width / 2 - this.instrucionContainer2.width / 2;
         this.instrucionContainer2.y = this.margin
 
+        this.pixiLogo.x = config.width - this.pixiLogo.width / 2 - this.margin;
+        this.pixiLogo.y = this.pixiLogo.height / 2 + this.margin;
+
     }
     onZoomOut() {
         this.currentZoom -= 0.1;
@@ -312,8 +320,8 @@ export default class WormsContainer extends PIXI.Container {
                 ent.reset();
                 ent.onOvuloCollide.add((target) => {
                     // if (!this.ovulo.isProtected) {
-                        this.absorve(target, this.ovulo);
-                        this.ovulo.hitted();
+                    this.absorve(target, this.ovulo);
+                    this.ovulo.hitted();
                     // }
                 })
                 ent.onEnemyCollide.add((target, enemy) => {
@@ -382,7 +390,7 @@ export default class WormsContainer extends PIXI.Container {
             this.absorvingElement.vel.y *= 0.9
             this.absorvingElement.angVel = { x: 0, y: 0 }
             if (this.absorvingElement) {
-                this.absorvingElement.absorving(delta);                
+                this.absorvingElement.absorving(delta);
             }
             if (this.absorvingElement) {
                 this.absorvingElement.update(delta);
@@ -513,7 +521,7 @@ export default class WormsContainer extends PIXI.Container {
         if (this.holdingOvulo && dist > (this.ovulo.radius * this.entityContainer.scale.x) / 2) {
             let ovuloGlobal = this.ovulo.getGlobalPosition();
             let angle = Math.atan2(this.mousePosition.y - ovuloGlobal.y, this.mousePosition.x - ovuloGlobal.x);
-            this.ovulo.applyVelocity(angle, Math.max(Math.min(2-this.entityContainer.scale.x, 1), 2));
+            this.ovulo.applyVelocity(angle, Math.max(Math.min(2 - this.entityContainer.scale.x, 1), 2));
             if (!this.hidingInstruction) {
                 this.hidingInstruction = true;
                 TweenLite.to(this.instrucionContainer, 1, {
@@ -538,7 +546,7 @@ export default class WormsContainer extends PIXI.Container {
             }
         }
         let ovuloGlobal = this.ovulo.getGlobalPosition();
-        if (utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y) < this.ovulo.width* this.entityContainer.scale.x / 2) {
+        if (utils.distance(this.mousePosition.x, this.mousePosition.y, ovuloGlobal.x, ovuloGlobal.y) < this.ovulo.width * this.entityContainer.scale.x / 2) {
             this.holdingOvulo = true;
             // this.holdingOvuloDiff = { x: this.mousePosition.x - this.ovulo.x, y: this.mousePosition.y - this.ovulo.y }
         }
