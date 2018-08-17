@@ -394,10 +394,10 @@ export default class WormsContainer extends PIXI.Container {
             this.absorvingElement.vel.y *= 0.9
             this.absorvingElement.angVel = { x: 0, y: 0 }
             if (this.absorvingElement) {
-                this.absorvingElement.absorving(delta * 3);
+                this.absorvingElement.absorving(delta * 5);
             }
             if (this.absorvingElement) {
-                this.absorvingElement.update(delta * 3);
+                this.absorvingElement.update(delta);
             }
         }
         this.additiveSky.tilePosition.y += delta * - 5;
