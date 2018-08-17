@@ -247,8 +247,8 @@ export default class WormsContainer extends PIXI.Container {
 
         this.resize();
 
-        this.addSperms({ x: config.width / 2, y: 0 }, 100);
-        this.addSperms({ x: config.width / 2, y: config.height }, 100);
+        this.addSperms({ x: config.width / 2, y: 0 }, 10);
+        this.addSperms({ x: config.width / 2, y: config.height }, 10);
     }
     resize() {
         this.minusZoom.scale.set(config.height / this.minusZoom.height * 0.1)
@@ -394,10 +394,10 @@ export default class WormsContainer extends PIXI.Container {
             this.absorvingElement.vel.y *= 0.9
             this.absorvingElement.angVel = { x: 0, y: 0 }
             if (this.absorvingElement) {
-                this.absorvingElement.absorving(delta);
+                this.absorvingElement.absorving(delta * 3);
             }
             if (this.absorvingElement) {
-                this.absorvingElement.update(delta);
+                this.absorvingElement.update(delta * 3);
             }
         }
         this.additiveSky.tilePosition.y += delta * - 5;
