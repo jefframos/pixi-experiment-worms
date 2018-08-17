@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import Signals from 'signals'
 export default class Ovario extends PIXI.Container {
     constructor(radius = 80) {
         super();

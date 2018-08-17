@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js';
 import Trail from './effects/Trail'
 import Signals from 'signals'
-export default class Entity extends PIXI.Container {
+export default class Ray extends PIXI.Container {
     constructor(parentContainer, radius) {
         super();
-        this.radius = radius * 0.5;
+        this.radius = radius;
         this.onOvuloCollide = new Signals();
         this.onKill = new Signals();
         this.onEnemyCollide = new Signals();
@@ -12,10 +12,10 @@ export default class Entity extends PIXI.Container {
         this.innerHead = new PIXI.Sprite.from('assets/game/inner-head.png');//new PIXI.Graphics().beginFill(0xFFFFFF * Math.random()).drawCircle(0,0,5);
         // this.entity = new PIXI.Sprite.from('assets/game/pickup.png');//new PIXI.Graphics().beginFill(0xFFFFFF * Math.random()).drawCircle(0,0,5);
         // this.radius = 25;
-        this.color = 0xFFFFFF// * Math.random();
+        this.color = 0x5cb8ff// * Math.random();
         this.entity.tint = this.color;
-        this.addChild(this.entity)
-        this.addChild(this.innerHead)
+        // this.addChild(this.entity)
+        // this.addChild(this.innerHead)
         this.entity.anchor.set(0.5, 0.7);
         this.innerHead.anchor.set(0.5);
         this.stdEntityScale = this.radius / this.entity.height;
@@ -29,13 +29,15 @@ export default class Entity extends PIXI.Container {
 
         this.parentContainer = parentContainer;
 
-        this.angPlusAccum = 10// * GAME_SCALES//15;
-        this.maxVelocity = 65// * GAME_SCALES;
-        this.maxAngularVelocity = 60// * GAME_SCALES;
+        this.angPlusAccum = 50// * GAME_SCALES//15;
+        this.maxVelocity = 130// * GAME_SCALES;
+        this.maxAngularVelocity = 130// * GAME_SCALES;
         this.minAngularVelocity = 20// * GAME_SCALES;
-        this.angularSpeedLimit = 0.5//0.1// * GAME_SCALES;
+        this.angularSpeedLimit = 0.75// * GAME_SCALES;
+        //thunder
+        // this.angularSpeedLimit = 0.5//0.1// * GAME_SCALES;
 
-        this.collideFrameSkip = 20// * GAME_SCALES;
+        this.collideFrameSkip = 200// * GAME_SCALES;
 
         // this.sinSpeed = (0.5 + Math.random()) * angPlusAccum;
         // this.cosSpeed = (0.5 + Math.random()) * angPlusAccum;
@@ -99,7 +101,7 @@ export default class Entity extends PIXI.Container {
         }
         for (let index = 0; index < enemiesList.length; index++) {
             const enemy = enemiesList[index];
-            if (utils.distance(this.x, this.y, enemy.x, enemy.y) < enemy.radius/2) {
+            if (utils.distance(this.x, this.y, enemy.x, enemy.y) < enemy.radius / 2) {
                 this.onEnemyCollide.dispatch(this, enemy);
                 this.kill();
             }
@@ -112,7 +114,7 @@ export default class Entity extends PIXI.Container {
         }
         this.target = target;
         this.targetAngle = Math.atan2(this.y - this.target.y, this.x - this.target.x) + Math.PI;
-        if (utils.distance(this.x, this.y, this.target.x, this.target.y) < this.target.width / 2){//this.target.radius / 2) {
+        if (utils.distance(this.x, this.y, this.target.x, this.target.y) < this.target.width / 2) {//this.target.radius / 2) {
             if (canAbsorb) {
                 this.onOvuloCollide.dispatch(this);
                 this.recalcAng(this.targetAngle)// + Math.PI);
@@ -132,14 +134,15 @@ export default class Entity extends PIXI.Container {
             this.innerHead.tint = this.currentColor;
             this.entity.tint = this.currentColor;
         } else {
-            utils.addColorTween(this.innerHead, this.innerHead.tint, this.currentColor,0.5);
-            utils.addColorTween(this.entity, this.entity.tint, this.currentColor,0.5);
+            utils.addColorTween(this.innerHead, this.innerHead.tint, this.currentColor, 0.5);
+            utils.addColorTween(this.entity, this.entity.tint, this.currentColor, 0.5);
         }
     }
     kill() {
         this.dying = true;
     }
     update(delta) {
+        delta *= 3
         if (this.killed) {
             return;
         }
@@ -202,10 +205,14 @@ export default class Entity extends PIXI.Container {
 
         this.entity.alpha = alpha
 
-        let newAng = this.properAngle;
-        newAng = this.angleLerp(newAng, this.targetAngle, this.angularSpeed * delta);
-        this.vel = { x: Math.cos(newAng) * this.currentVel, y: Math.sin(newAng) * this.currentVel };
-        this.properAngle = newAng
+        if (this.targetAngle) {
+            let newAng = this.properAngle || 0;
+            newAng = this.angleLerp(newAng, this.targetAngle, this.angularSpeed * delta);
+            this.vel = { x: Math.cos(newAng) * this.currentVel, y: Math.sin(newAng) * this.currentVel };
+            this.properAngle = newAng
+        }
+
+        // debugger
     }
     shortAngleDist(a0, a1) {
         var max = Math.PI * 2;
@@ -238,7 +245,7 @@ export default class Entity extends PIXI.Container {
         let angVel = this.minAngularVelocity + Math.random() * maxAngVel * 0.5
         this.angVel = { x: angVel, y: angVel };
 
-        if (this.entity.scale.x <= 0 && this.innerHead.scale.x <= 0) {
+        if (this.trail && this.entity.scale.x <= 0 && this.innerHead.scale.x <= 0) {
             let newPos = {
                 x: this.x + Math.cos(this.properAngle) * this.radius * 0.1,
                 y: this.y + Math.sin(this.properAngle) * this.radius * 0.1
@@ -290,12 +297,13 @@ export default class Entity extends PIXI.Container {
 
     }
     createTrail() {
-        this.trail = new Trail(this.parentContainer, 30, 'assets/game/full_power_effect.png');
-        this.trail.trailTick = this.radius * 0.25;
+        this.trail = new Trail(this.parentContainer, 50, 'assets/game/spark.png');
+        this.trail.trailTick = this.radius * 0.09;
         this.trail.speed = 0.75;
         this.trail.frequency = 0.001
         this.trail.update(0, this.position)
         this.trail.mesh.tint = this.color;
+        this.trail.mesh.alpha = 0.75;
         //thunder
         // this.trail.mesh.tint = 0x5cb8ff//this.color;
         this.trail.mesh.blendMode = PIXI.BLEND_MODES.ADD;

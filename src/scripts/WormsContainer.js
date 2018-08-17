@@ -1,6 +1,8 @@
 import * as PIXI from 'pixi.js';
 import ParticleSystem from './effects/ParticleSystem'
+// import Entity from './Ray'
 import Entity from './Entity'
+// import Ovulo from './CircleAttract'
 import Ovulo from './Ovulo'
 import UIButton from './UIButton'
 import Ovario from './Ovario'
@@ -237,7 +239,7 @@ export default class WormsContainer extends PIXI.Container {
 
         this.absorvingElement = null;
 
-        this.currentZoom = 1;
+        this.currentZoom = 0.75;
 
         this.centerPivot(true);
 
@@ -245,7 +247,8 @@ export default class WormsContainer extends PIXI.Container {
 
         this.resize();
 
-        // this.addSperms({ x: config.width / 2, y: 0 });
+        this.addSperms({ x: config.width / 2, y: 0 }, 100);
+        this.addSperms({ x: config.width / 2, y: config.height }, 100);
     }
     resize() {
         this.minusZoom.scale.set(config.height / this.minusZoom.height * 0.1)
@@ -321,7 +324,7 @@ export default class WormsContainer extends PIXI.Container {
                 ent.onOvuloCollide.add((target) => {
                     // if (!this.ovulo.isProtected) {
                     this.absorve(target, this.ovulo);
-                    this.ovulo.hitted();
+                    // this.ovulo.hitted();
                     // }
                 })
                 ent.onEnemyCollide.add((target, enemy) => {
@@ -377,7 +380,8 @@ export default class WormsContainer extends PIXI.Container {
     update(delta) {
         this.updateMouseAnimation(delta);
         this.updateTapAnimation(delta);
-
+        //thunder
+        // delta *= 4.5
         delta *= 1.5
         delta *= GAME_SCALES;
         if (utils.distance(this.ovulo.x, this.ovulo.y, this.ovario.x, this.ovario.y) < this.ovario.radius / 2 - this.ovulo.radius / 2) {
@@ -447,9 +451,11 @@ export default class WormsContainer extends PIXI.Container {
             return;
         }
         // localPos = this.entityContainer.toLocal(e.data.global)
-        this.addParticleExplosion(entity, target)
-        entity.changeColor(target.sprite.tint);
-        entity.kill();
+
+        //LIGHT
+        // this.addParticleExplosion(entity, target)
+        // entity.kill();
+        // entity.changeColor(target.sprite.tint);
         this.absorvingElement = entity;
     }
     addParticleExplosion(pos, target, quant = 3) {

@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import Signals from 'signals';
 export default class ParticleSystem extends PIXI.Container
 {
     constructor()

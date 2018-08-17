@@ -1,10 +1,14 @@
 import * as PIXI from 'pixi.js';
-export default class Entity extends PIXI.Container {
+import Ray from './Ray'
+import Trail from './effects/Trail'
+export default class CircleAttract extends PIXI.Container {
     constructor(radius = 80) {
         super();
         this.sprite = new PIXI.Sprite.from('assets/game/ovulo.png');
         this.sprite.anchor.set(0.5);
-        // this.sprite.alpha = 0
+        this.sprite.alpha = 0
+
+        radius *= 3
         // this.ovulo.x = config.width / 2;
         // this.ovulo.y = config.height / 2;
         this.mainRadius = radius;
@@ -19,6 +23,36 @@ export default class Entity extends PIXI.Container {
         this.velocity = { x: 0, y: 0 }
         this.maxVel = 150 * GAME_SCALES;// * GAME_SCALES;
         this.resetVelocity();
+
+        this.rays = [];
+        for (let index = 0; index < 10; index++) {
+            let trail = new Trail(this, 30, 'assets/game/spark.png');
+            trail.trailTick = 2;
+            trail.speed = 0.75;
+            trail.frequency = 0.0001
+
+            trail.sin = Math.random() * 5;
+            trail.pos = {x:0,y:0}
+            trail.pos.x = Math.cos( trail.sin) * this.sprite.width /2//+ this.x
+            trail.pos.y = Math.sin( trail.sin) * this.sprite.height /2//+ this.y
+
+            trail.update(0, trail.pos)
+            trail.mesh.tint = 0x5cb8ff;
+            trail.mesh.alpha = 0.75;
+
+            trail.adj = Math.random() * 20 -10
+            //thunder
+            // trail.mesh.tint = 0x5cb8ff//this.color;
+            trail.mesh.blendMode = PIXI.BLEND_MODES.ADD;
+    
+            trail.speed = Math.random() > 0.5 ? 1 : -1
+            this.rays.push(trail)
+        }
+        
+
+
+
+        
         // this.isProtected = true;
     }
     zeroVel() {
@@ -32,9 +66,27 @@ export default class Entity extends PIXI.Container {
         this.udpateVelocity(delta);
         this.x += this.velocity.x * delta;
         this.y += this.velocity.y * delta;
-        this.scaleSin += delta * 5;
-        this.sprite.scale.x = this.startScale + Math.cos(this.scaleSin) * this.startScale * 0.075
-        this.sprite.scale.y = this.startScale + Math.sin(this.scaleSin) * this.startScale * 0.075
+        this.scaleSin += delta;
+        this.sprite.scale.x = this.startScale + Math.cos(this.scaleSin) * this.startScale * 0.05
+        this.sprite.scale.y = this.startScale + Math.sin(this.scaleSin) * this.startScale * 0.05
+
+        delta *= 3
+        for (let index = 0; index < this.rays.length; index++) {
+            const element = this.rays[index];
+            element.sin += delta * element.speed
+            element.pos.x = Math.cos( element.sin) * (this.sprite.width + element.adj) /2//+ this.x
+            element.pos.y = Math.sin( element.sin) * (this.sprite.height + element.adj) /2//+ this.y
+            element.update(delta, element.pos)
+        }
+            
+        //     element.sin += delta
+        //    element.collideFrameSkip = 20
+        //    element.collideTimer = 20
+        //    element.recalcAngleSpeedTimer = 20
+        //    element.vel.x = Math.cos( element.sin) * 50 //+ element.x
+        //    element.vel.y = Math.sin( element.sin) * 50 //+ element.y
+        //    element.update(delta)
+        // }
     }
     hitted(){
         this.startScale += 0.02
